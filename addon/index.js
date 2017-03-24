@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import _ from 'lodash/lodash';
+import isEqual from 'lodash/isEqual';
 
 export default Ember.Mixin.create({
   init() {
@@ -24,7 +24,7 @@ export default Ember.Mixin.create({
     let changed = changedKey(this);
     return Object.keys(this._relationshipTracker).some(field => {
       let entry = this._relationshipTracker[field];
-      return (changed in entry) && !_.isEqual(entry[changed], currentState(this, field));
+      return (changed in entry) && !isEqual(entry[changed], currentState(this, field));
     });
   }),
 
