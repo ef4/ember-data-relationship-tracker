@@ -13,12 +13,15 @@ Track ember data relationships to know if records are dirty.
 ## Example
 
 ```js
-// watch a 
+// watch a section of code that might change relationships
 post.watchRelationship('comments', () => {
   post.set('comments', someComments);
 });
 
 post.get('hasDirtyFields'); // true if comments has changed (or any other attribute has changed)
+
+// rollback relationships to previous state
+post.rollbackRelationships();
 ```
 Works for `belongsTo` and `hasMany` relationships, and also knows if you set the relationships back to the original state and sets the property to false again.
 
