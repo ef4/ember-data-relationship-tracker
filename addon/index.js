@@ -46,7 +46,8 @@ function currentState(model, field) {
   let config = Ember.get(model.constructor, 'relationshipsByName').get(field);
   if (config.kind === 'hasMany') {
     let reference = model.hasMany(field);
-    return reference.value().toArray();
+    let value = reference.value();
+    return value ? value.toArray() : null;
   } else {
     let reference = model.belongsTo(field);
     return reference.value();
