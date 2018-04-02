@@ -17,7 +17,7 @@ export default Ember.Mixin.create({
       entry[changed] = currentState(this, field);
     }
     fn();
-    this.propertyDidChange('hasDirtyRelationships');
+    this.notifyPropertyChange('hasDirtyRelationships');
   },
 
   hasDirtyRelationships: Ember.computed('changed', function() {
@@ -37,7 +37,7 @@ export default Ember.Mixin.create({
       if (!tracker[field] || !(changed in tracker[field])) { return; }
       this.set(field, tracker[field][changed]);
     });
-    this.propertyDidChange('hasDirtyRelationships');
+    this.notifyPropertyChange('hasDirtyRelationships');
   }
 
 });
