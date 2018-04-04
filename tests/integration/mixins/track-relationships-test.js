@@ -206,3 +206,15 @@ test('can roll back hasMany to previous value', function(assert) {
     assert.deepEqual(pc.map(c => c.get('body')), ["first post"]);
   });
 });
+
+test('can handle hasMany with an unsaved parent record', function(assert) {
+  let unsavedPost;
+  Ember.run(() => {
+    unsavedPost = this.store.createRecord('post');
+    unsavedPost.watchRelationship('pendingComments', () => {
+      let newComment = this.store.createRecord('comment', { body: 'other' });
+      unsavedPost.get('pendingComments').pushObject(newComment);
+    });
+  });
+  assert.equal(unsavedPost.get('hasDirtyFields'), true);
+});
