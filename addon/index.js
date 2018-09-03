@@ -48,7 +48,8 @@ function currentState(model, field) {
   let config = get(model.constructor, 'relationshipsByName').get(field);
   if (config.kind === 'hasMany') {
     let reference = model.hasMany(field);
-    return reference.value().toArray();
+    let refValue = reference.value();
+    return refValue ? refValue.toArray() : [];
   } else {
     let reference = model.belongsTo(field);
     return reference.value();
