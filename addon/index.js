@@ -1,7 +1,9 @@
-import Ember from 'ember';
+import { or } from '@ember/object/computed';
+import { computed, get } from '@ember/object';
+import Mixin from '@ember/object/mixin';
 import isEqual from 'lodash/isEqual';
 
-export default Ember.Mixin.create({
+export default Mixin.create({
   init() {
     this._super();
     this._relationshipTracker = Object.create(null);
@@ -20,7 +22,7 @@ export default Ember.Mixin.create({
     this.notifyPropertyChange('hasDirtyRelationships');
   },
 
-  hasDirtyRelationships: Ember.computed('changed', function() {
+  hasDirtyRelationships: computed('changed', function() {
     let changed = changedKey(this);
     return Object.keys(this._relationshipTracker).some(field => {
       let entry = this._relationshipTracker[field];
@@ -28,7 +30,7 @@ export default Ember.Mixin.create({
     });
   }),
 
-  hasDirtyFields: Ember.computed.or('hasDirtyAttributes', 'hasDirtyRelationships'),
+  hasDirtyFields: or('hasDirtyAttributes', 'hasDirtyRelationships'),
 
   rollbackRelationships() {
     let changed = changedKey(this);
@@ -43,7 +45,7 @@ export default Ember.Mixin.create({
 });
 
 function currentState(model, field) {
-  let config = Ember.get(model.constructor, 'relationshipsByName').get(field);
+  let config = get(model.constructor, 'relationshipsByName').get(field);
   if (config.kind === 'hasMany') {
     let reference = model.hasMany(field);
     return reference.value().toArray();
