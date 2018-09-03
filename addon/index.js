@@ -1,4 +1,4 @@
-import { or } from '@ember/object/computed';
+import { or, gt } from '@ember/object/computed';
 import { computed, get } from '@ember/object';
 import Mixin from '@ember/object/mixin';
 import isEqual from 'lodash/isEqual';
@@ -19,29 +19,42 @@ export default Mixin.create({
       entry[changed] = currentState(this, field);
     }
     fn();
-    this.notifyPropertyChange('hasDirtyRelationships');
+    this.notifyPropertyChange('dirtyRelationships');
   },
 
-  hasDirtyRelationships: computed('changed', function() {
-    let changed = changedKey(this);
-    return Object.keys(this._relationshipTracker).some(field => {
-      let entry = this._relationshipTracker[field];
-      return (changed in entry) && !isEqual(entry[changed], currentState(this, field));
-    });
-  }),
+  hasDirtyRelationships: gt('dirtyRelationships.length', 0),
 
   hasDirtyFields: or('hasDirtyAttributes', 'hasDirtyRelationships'),
+
+  dirtyRelationships: computed('changed', function() {
+    let changed = changedKey(this);
+    let dirty = [];
+    this._forEachRelationship(field => {
+      let entry = this._relationshipTracker[field];
+      let relationshipChanged = (changed in entry) && !isEqual(entry[changed], currentState(this, field));
+      if (relationshipChanged) {
+        dirty.push(field);
+      }
+    });
+    return dirty;
+  }),
 
   rollbackRelationships() {
     let changed = changedKey(this);
     let tracker = this._relationshipTracker;
-    Object.keys(tracker).forEach(field => {
+    this._forEachRelationship(field => {
       if (!tracker[field] || !(changed in tracker[field])) { return; }
       this.set(field, tracker[field][changed]);
     });
-    this.notifyPropertyChange('hasDirtyRelationships');
-  }
+    this.notifyPropertyChange('dirtyRelationships');
+  },
 
+  _forEachRelationship(fn) {
+    let tracker = this._relationshipTracker;
+    Object.keys(tracker).forEach(field => {
+      fn(field);
+    });
+  }
 });
 
 function currentState(model, field) {
@@ -58,9 +71,11 @@ function currentState(model, field) {
 
 function changedKey(model) {
   let changed = model.get('changed');
-  if (changed) {
-    return changed.getTime();
-  } else {
+  if (!changed) {
     return -1;
   }
+  if (typeof changed.getTime === 'function') {
+    return changed.getTime();
+  }
+  return changed;
 }
