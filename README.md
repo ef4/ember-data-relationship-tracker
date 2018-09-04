@@ -27,26 +27,32 @@ Works for `belongsTo` and `hasMany` relationships, and also knows if you set the
 
 See [the tests](https://github.com/ef4/ember-data-relationship-tracker/blob/master/tests/integration/mixins/track-relationships-test.js) for more examples.
 
-## Installation
+Installation
+------------------------------------------------------------------------------
 
 * `git clone <repository-url>` this repository
 * `cd ember-data-relationship-tracker`
 * `npm install`
-* `bower install`
 
-## Running
+### Linting
+
+* `npm run lint:js`
+* `npm run lint:js -- --fix`
+
+### Running tests
+
+* `ember test` – Runs the test suite on the current Ember version
+* `ember test --server` – Runs the test suite in "watch mode"
+* `ember try:each` – Runs the test suite against multiple Ember versions
+
+### Running the dummy application
 
 * `ember serve`
-* Visit your app at [http://localhost:4200](http://localhost:4200).
+* Visit the dummy application at [http://localhost:4200](http://localhost:4200).
 
-## Running Tests
+For more information on using ember-cli, visit [https://ember-cli.com/](https://ember-cli.com/).
 
-* `npm test` (Runs `ember try:each` to test your addon against multiple Ember versions)
-* `ember test`
-* `ember test --server`
+License
+------------------------------------------------------------------------------
 
-## Building
-
-* `ember build`
-
-For more information on using ember-cli, visit [http://ember-cli.com/](http://ember-cli.com/).
+This project is licensed under the [MIT License](LICENSE.md).

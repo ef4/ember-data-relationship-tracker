@@ -1,4 +1,5 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
+import { resolve, all } from 'rsvp';
 import { moduleForComponent, test } from 'ember-qunit';
 import DS from 'ember-data';
 import TrackRelationships from 'ember-data-relationship-tracker';
@@ -28,14 +29,14 @@ moduleForComponent('track-relationships', 'Integration | Mixin | track relations
     this.register('adapter:comment', FakeAdapter);
     this.inject.service('store');
 
-    return Ember.RSVP.resolve().then(() => {
+    return resolve().then(() => {
       editor = this.get('store').createRecord('author', { name: 'E' });
       comment = this.get('store').createRecord('comment', { body: 'first post' });
       post = this.get('store').createRecord('post');
       post.set('title', 'initial title');
       post.set('editor', editor);
       post.set('pendingComments', [comment]);
-      return Ember.RSVP.all([post.save(), editor.save(), comment.save()]);
+      return all([post.save(), editor.save(), comment.save()]);
     });
   }
 });
@@ -45,24 +46,24 @@ test('hasDirtyFields starts out false', function(assert) {
 });
 
 test('hasDirtyFields reflects attribute dirtying', function(assert) {
-  Ember.run(() => {
+  run(() => {
     post.set('title', 'x');
   });
   assert.equal(post.get('hasDirtyFields'), true);
 });
 
 test('hasDirtyFields reflects attribute un-dirtying', function(assert) {
-  Ember.run(() => {
+  run(() => {
     post.set('title', 'x');
   });
-  Ember.run(() => {
+  run(() => {
     post.set('title', 'initial title');
   });
   assert.equal(post.get('hasDirtyFields'), false);
 });
 
 test('hasDirtyFields reflects belongsTo initial set', function(assert) {
-  Ember.run(() => {
+  run(() => {
     post.watchRelationship('author', () => {
       post.set('author', this.store.createRecord('author'));
     });
@@ -71,12 +72,12 @@ test('hasDirtyFields reflects belongsTo initial set', function(assert) {
 });
 
 test('hasDirtyFields reflects belongsTo un-dirtying to empty', function(assert) {
-  Ember.run(() => {
+  run(() => {
     post.watchRelationship('author', () => {
       post.set('author', this.store.createRecord('author'));
     });
   });
-  Ember.run(() => {
+  run(() => {
     post.watchRelationship('author', () => {
       post.set('author', null);
     });
@@ -85,7 +86,7 @@ test('hasDirtyFields reflects belongsTo un-dirtying to empty', function(assert) 
 });
 
 test('hasDirtyFields reflects belongsTo change', function(assert) {
-  Ember.run(() => {
+  run(() => {
     post.watchRelationship('editor', () => {
       post.set('editor', this.store.createRecord('author'));
     });
@@ -94,12 +95,12 @@ test('hasDirtyFields reflects belongsTo change', function(assert) {
 });
 
 test('hasDirtyFields reflects belongsTo un-dirtying to previous value', function(assert) {
-  Ember.run(() => {
+  run(() => {
     post.watchRelationship('editor', () => {
       post.set('editor', this.store.createRecord('author'));
     });
   });
-  Ember.run(() => {
+  run(() => {
     post.watchRelationship('editor', () => {
       post.set('editor', editor);
     });
@@ -108,12 +109,12 @@ test('hasDirtyFields reflects belongsTo un-dirtying to previous value', function
 });
 
 test('can roll back belongsTo to empty', function(assert) {
-  Ember.run(() => {
+  run(() => {
     post.watchRelationship('author', () => {
       post.set('author', this.store.createRecord('author'));
     });
   });
-  Ember.run(() => {
+  run(() => {
     post.rollbackRelationships();
   });
   assert.equal(post.get('hasDirtyFields'), false);
@@ -123,12 +124,12 @@ test('can roll back belongsTo to empty', function(assert) {
 });
 
 test('can roll back belongsTo to previous value', function(assert) {
-  Ember.run(() => {
+  run(() => {
     post.watchRelationship('editor', () => {
       post.set('editor', this.store.createRecord('author'));
     });
   });
-  Ember.run(() => {
+  run(() => {
     post.rollbackRelationships();
   });
   assert.equal(post.get('hasDirtyFields'), false);
@@ -138,7 +139,7 @@ test('can roll back belongsTo to previous value', function(assert) {
 });
 
 test('hasDirtyFields reflects hasMany initial set', function(assert) {
-  Ember.run(() => {
+  run(() => {
     post.watchRelationship('comments', () => {
       post.set('comments', [this.store.createRecord('comment')]);
     });
@@ -147,12 +148,12 @@ test('hasDirtyFields reflects hasMany initial set', function(assert) {
 });
 
 test('hasDirtyFields reflects hasMany un-dirtying to empty', function(assert) {
-  Ember.run(() => {
+  run(() => {
     post.watchRelationship('comments', () => {
       post.set('comments', [this.store.createRecord('comment')]);
     });
   });
-  Ember.run(() => {
+  run(() => {
     post.watchRelationship('comments', () => {
       post.set('comments', []);
     });
