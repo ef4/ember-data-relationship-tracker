@@ -19,9 +19,9 @@ export default Mixin.create({
     if (!entry) {
       entry = this._relationshipTracker[field] = Object.create(null);
     }
-    let changed = changedKey(this);
-    if (!(changed in entry)) {
-      entry[changed] = currentState(this, field);
+    let version = versionKey(this);
+    if (!(version in entry)) {
+      entry[version] = currentState(this, field);
     }
     fn();
     this.notifyPropertyChange('dirtyRelationships');
@@ -31,12 +31,12 @@ export default Mixin.create({
 
   hasDirtyFields: or('hasDirtyAttributes', 'hasDirtyRelationships'),
 
-  dirtyRelationships: computed('changed', function() {
-    let changed = changedKey(this);
+  dirtyRelationships: computed('version', function() {
+    let version = versionKey(this);
     let dirty = [];
     this._forEachRelationship(field => {
       let entry = this._relationshipTracker[field];
-      let relationshipChanged = (changed in entry) && !isEqual(entry[changed], currentState(this, field));
+      let relationshipChanged = (version in entry) && !isEqual(entry[version], currentState(this, field));
       if (relationshipChanged) {
         dirty.push(field);
       }
@@ -45,11 +45,11 @@ export default Mixin.create({
   }),
 
   rollbackRelationships() {
-    let changed = changedKey(this);
+    let version = versionKey(this);
     let tracker = this._relationshipTracker;
     this._forEachRelationship(field => {
-      if (!tracker[field] || !(changed in tracker[field])) { return; }
-      this.set(field, tracker[field][changed]);
+      if (!tracker[field] || !(version in tracker[field])) { return; }
+      this.set(field, tracker[field][version]);
     });
     this.notifyPropertyChange('dirtyRelationships');
   },
@@ -74,13 +74,13 @@ function currentState(model, field) {
   }
 }
 
-function changedKey(model) {
-  let changed = model.get('changed');
-  if (!changed) {
+function versionKey(model) {
+  let version = model.get('version');
+  if (!version) {
     return -1;
   }
-  if (typeof changed.getTime === 'function') {
-    return changed.getTime();
+  if (typeof version.getTime === 'function') {
+    return version.getTime();
   }
-  return changed;
+  return version;
 }
