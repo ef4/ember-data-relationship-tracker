@@ -9,6 +9,11 @@ export default Mixin.create({
     this._relationshipTracker = Object.create(null);
   },
 
+  async save() {
+    await this._super();
+    this.notifyPropertyChange('version');
+  },
+
   watchRelationship(field, fn) {
     let entry = this._relationshipTracker[field];
     if (!entry) {
