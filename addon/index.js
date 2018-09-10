@@ -11,7 +11,7 @@ export default Mixin.create({
 
   async save() {
     await this._super();
-    this.notifyPropertyChange('version');
+    this.notifyPropertyChange('relationshipTrackerVersion');
   },
 
   watchRelationship(field, fn) {
@@ -31,7 +31,7 @@ export default Mixin.create({
 
   hasDirtyFields: or('hasDirtyAttributes', 'hasDirtyRelationships'),
 
-  dirtyRelationships: computed('version', function() {
+  dirtyRelationships: computed('relationshipTrackerVersion', function() {
     let version = versionKey(this);
     let dirty = [];
     this._forEachRelationship(field => {
@@ -75,7 +75,7 @@ function currentState(model, field) {
 }
 
 function versionKey(model) {
-  let version = model.get('version');
+  let version = model.get('relationshipTrackerVersion');
   if (!version) {
     return -1;
   }
