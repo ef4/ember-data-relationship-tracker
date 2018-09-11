@@ -1,4 +1,4 @@
-import { or } from '@ember/object/computed';
+import { or, gt } from '@ember/object/computed';
 import { computed, get } from '@ember/object';
 import Mixin from '@ember/object/mixin';
 import isEqual from 'lodash/isEqual';
@@ -9,39 +9,57 @@ export default Mixin.create({
     this._relationshipTracker = Object.create(null);
   },
 
+  async save() {
+    await this._super();
+    this.notifyPropertyChange('version');
+  },
+
   watchRelationship(field, fn) {
     let entry = this._relationshipTracker[field];
     if (!entry) {
       entry = this._relationshipTracker[field] = Object.create(null);
     }
-    let changed = changedKey(this);
-    if (!(changed in entry)) {
-      entry[changed] = currentState(this, field);
+    let version = versionKey(this);
+    if (!(version in entry)) {
+      entry[version] = currentState(this, field);
     }
     fn();
-    this.notifyPropertyChange('hasDirtyRelationships');
+    this.notifyPropertyChange('dirtyRelationships');
   },
 
-  hasDirtyRelationships: computed('changed', function() {
-    let changed = changedKey(this);
-    return Object.keys(this._relationshipTracker).some(field => {
-      let entry = this._relationshipTracker[field];
-      return (changed in entry) && !isEqual(entry[changed], currentState(this, field));
-    });
-  }),
+  hasDirtyRelationships: gt('dirtyRelationships.length', 0),
 
   hasDirtyFields: or('hasDirtyAttributes', 'hasDirtyRelationships'),
 
+  dirtyRelationships: computed('version', function() {
+    let version = versionKey(this);
+    let dirty = [];
+    this._forEachRelationship(field => {
+      let entry = this._relationshipTracker[field];
+      let relationshipChanged = (version in entry) && !isEqual(entry[version], currentState(this, field));
+      if (relationshipChanged) {
+        dirty.push(field);
+      }
+    });
+    return dirty;
+  }),
+
   rollbackRelationships() {
-    let changed = changedKey(this);
+    let version = versionKey(this);
+    let tracker = this._relationshipTracker;
+    this._forEachRelationship(field => {
+      if (!tracker[field] || !(version in tracker[field])) { return; }
+      this.set(field, tracker[field][version]);
+    });
+    this.notifyPropertyChange('dirtyRelationships');
+  },
+
+  _forEachRelationship(fn) {
     let tracker = this._relationshipTracker;
     Object.keys(tracker).forEach(field => {
-      if (!tracker[field] || !(changed in tracker[field])) { return; }
-      this.set(field, tracker[field][changed]);
+      fn(field);
     });
-    this.notifyPropertyChange('hasDirtyRelationships');
   }
-
 });
 
 function currentState(model, field) {
@@ -56,11 +74,13 @@ function currentState(model, field) {
   }
 }
 
-function changedKey(model) {
-  let changed = model.get('changed');
-  if (changed) {
-    return changed.getTime();
-  } else {
+function versionKey(model) {
+  let version = model.get('version');
+  if (!version) {
     return -1;
   }
+  if (typeof version.getTime === 'function') {
+    return version.getTime();
+  }
+  return version;
 }
