@@ -10,6 +10,8 @@ Track ember data relationships to know if records are dirty.
 
 `ember-data-relationship-tracker` allows you to explicitly mark pieces of code where you might change relationships. This gives you a `hasDirtyFields` property on your models that lets you know if any attributes _or relationships_ have changed so you can reflect this in your UI.
 
+In order to safely distinguish new versions from the server vs new edits in the client, you must provide a `version` field on your model. It can be a computed property or a real field, but it must be a unique value that changes whenever the server provides a new version.
+
 ## Example
 
 ```js
