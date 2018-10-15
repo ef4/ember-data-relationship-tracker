@@ -10,7 +10,7 @@ export default Mixin.create({
   },
 
   async save() {
-    await this._super();
+    await this._super(...arguments);
     this.notifyPropertyChange('relationshipTrackerVersion');
   },
 
