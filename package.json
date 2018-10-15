@@ -1,6 +1,6 @@
 {
   "name": "ember-data-relationship-tracker",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "An explicit protocol for tracking dirty relationships in ember-data.",
   "keywords": [
     "ember-addon",
