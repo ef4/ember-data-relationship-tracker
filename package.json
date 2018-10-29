@@ -21,9 +21,9 @@
     "test:all": "ember try:each"
   },
   "dependencies": {
+    "ember-auto-import": "^1.2.15",
     "ember-cli-babel": "^6.8.2",
-    "ember-lodash": "^4.17.2",
-    "lodash": "^4.17.4"
+    "lodash-es": "^4.17.11"
   },
   "devDependencies": {
     "broccoli-asset-rev": "^2.7.0",

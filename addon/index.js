@@ -1,7 +1,7 @@
 import { or, gt } from '@ember/object/computed';
 import { computed, get } from '@ember/object';
 import Mixin from '@ember/object/mixin';
-import isEqual from 'lodash/isEqual';
+import { isEqual } from 'lodash-es';
 
 export default Mixin.create({
   init() {
