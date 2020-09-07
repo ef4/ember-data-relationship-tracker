@@ -1,5 +1,5 @@
 'use strict';
 
 module.exports = {
-  name: 'ember-data-relationship-tracker'
+  name: require('./package').name
 };
