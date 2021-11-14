@@ -1,4 +1,5 @@
 import Model, { hasMany, belongsTo, attr } from '@ember-data/model';
+import JSONAPISerializer from '@ember-data/serializer/json-api';
 import { run } from '@ember/runloop';
 import { resolve, all } from 'rsvp';
 import { module, test } from 'qunit';
@@ -12,6 +13,7 @@ module('Integration | Mixin | track relationships', function(hooks) {
   setupRenderingTest(hooks);
 
   hooks.beforeEach(function() {
+    this.owner.register('serializer:application', JSONAPISerializer);
     this.owner.register('model:post', Model.extend(TrackRelationships, {
       title: attr('string'),
       comments: hasMany(),
