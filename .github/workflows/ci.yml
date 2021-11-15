@@ -35,7 +35,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 12.x
-          cache: npm
+          cache: yarn
       - name: Install Dependencies
         run: yarn install --frozen-lockfile --no-shrinkwrap
       - name: Run Tests
@@ -57,8 +57,8 @@ jobs:
           # - ember-canary
           - ember-classic
           - ember-default-with-jquery
-          - embroider-safe
-          - embroider-optimized
+          # - embroider-safe
+          # - embroider-optimized
 
     steps:
       - uses: actions/checkout@v2
