@@ -14,6 +14,7 @@ module('Integration | Mixin | track relationships', function(hooks) {
 
   hooks.beforeEach(function() {
     this.owner.register('serializer:application', JSONAPISerializer);
+
     this.owner.register('model:post', Model.extend(TrackRelationships, {
       title: attr('string'),
       comments: hasMany(),
@@ -215,6 +216,8 @@ module('Integration | Mixin | track relationships as Class', function(hooks) {
   setupRenderingTest(hooks);
 
   hooks.beforeEach(function() {
+    this.owner.register('serializer:application', JSONAPISerializer);
+
     class PostModel extends Model.extend(TrackRelationships) {
       @attr('string') title;
       @hasMany() comments;
