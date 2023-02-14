@@ -1,6 +1,7 @@
 import Model, { hasMany, belongsTo, attr } from '@ember-data/model';
 import JSONAPISerializer from '@ember-data/serializer/json-api';
 import { run } from '@ember/runloop';
+import EmberObject from '@ember/object';
 import { resolve, all } from 'rsvp';
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
@@ -415,5 +416,19 @@ module('Integration | Mixin | track relationships as Class', function(hooks) {
     }).then(pc => {
       assert.deepEqual(pc.map(c => c.get('body')), ["first post"]);
     });
+  });
+});
+
+module('Integration | Mixin | base class init receives args', function () {
+  test('it receives args', function (assert) {
+    let receivedArgs;
+    class ExampleModel extends EmberObject.extend(TrackRelationships) {
+      init() {
+        receivedArgs = arguments;
+      }
+    }
+    const model = new ExampleModel();
+    model.init(['a', 3]);
+    assert.deepEqual(receivedArgs, ['a', 3]);
   });
 });
