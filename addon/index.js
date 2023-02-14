@@ -5,7 +5,7 @@ import isEqual from 'lodash-es/isEqual';
 
 export default Mixin.create({
   init() {
-    this._super();
+    this._super(...arguments);
     this._relationshipTracker = Object.create(null);
   },
 
